@@ -1,0 +1,17 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "maxWorkers": 1,
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@app/ai-queue(|/.*)$": "<rootDir>/../../../libs/ai-queue/src/$1",
+    "^@app/auth(|/.*)$": "<rootDir>/../../../libs/auth/src/$1",
+    "^@app/database(|/.*)$": "<rootDir>/../../../libs/database/src/$1",
+    "^@app/file-storage(|/.*)$": "<rootDir>/../../../libs/file-storage/src/$1"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/jest-e2e.setup.ts"]
+}

@@ -1,0 +1,38 @@
+stages:
+  - install
+  - test
+
+# Cache node_modules for faster builds
+cache:
+  paths:
+    - node_modules/
+
+# 1. Install dependencies
+install:
+  stage: install
+  image: node:24
+  script:
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+
+# 2. Run unit & e2e tests
+test:
+  stage: test
+  image: node:24
+  services:
+    - name: postgres:15
+      alias: db
+    - name: redis:7
+      alias: redis
+  variables:
+    POSTGRES_HOST: db
+    POSTGRES_DB: mydatabase
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
+  script:
+    - npx jest --forceExit
+    # - npm run test:e2e
