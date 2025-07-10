@@ -15,8 +15,8 @@ Before running the application, ensure you have the following installed:
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd <project-directory>
+   git clone https://github.com/Shatwik7/survify
+   cd survify 
    ```
 
 2. **Create environment file**
@@ -46,10 +46,6 @@ Before running the application, ensure you have the following installed:
    # Application Configuration
    NODE_ENV=production
    PORT=3000
-
-   # File Upload Configuration
-   MAX_FILE_SIZE=2000000000
-   UPLOAD_DEST=./uploads
 
    # OPEN AI KEYS 
     AZURE_OPENAI_API_KEY=
