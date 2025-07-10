@@ -1,73 +1,116 @@
-# Welcome to your Lovable project
+# Application Documentation
 
-## Project info
+## Overview
 
-**URL**: https://lovable.dev/projects/6ec12ae6-4e4a-4e6e-8c56-ae692b94eb1c
+This application is a modern survey and questionnaire management platform. It allows users to create, edit, and distribute questionnaires, manage target populations, collect responses, and analyze results. The platform leverages AI for smart questionnaire generation and provides robust tools for segmentation, analytics, and secure data handling.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Pages & Their Operations
 
-**Use Lovable**
+### 1. **Landing Page**
+- **Purpose:** Introduction to the platform, value proposition, and quick access to authentication.
+- **Operations:**
+  - Navigate to Login or Register.
+  - View platform features and call-to-action.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6ec12ae6-4e4a-4e6e-8c56-ae692b94eb1c) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+### 2. **Authentication**
+- **Login Page**
+  - **Purpose:** Secure user authentication.
+  - **Operations:** User login with email and password.
+- **Register Page**
+  - **Purpose:** New user registration.
+  - **Operations:** Create a new account with email, password, and name.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 3. **Dashboard**
+- **Purpose:** Central hub for all user operations after login.
+- **Operations:**
+  - Sidebar navigation to all main sections (Questionnaires, Population, Surveys, etc.).
+  - View dashboard header and status.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+### 4. **Questionnaires**
+- **Questionnaire List Page**
+  - **Purpose:** Manage all questionnaires.
+  - **Operations:**
+    - View all questionnaires.
+    - Create a new questionnaire (manually or with AI).
+    - Edit, duplicate, or delete questionnaires.
+    - Open a questionnaire to view or manage its questions.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- **Questionnaire View Page**
+  - **Purpose:** Manage questions within a specific questionnaire.
+  - **Operations:**
+    - View all questions in the questionnaire.
+    - Add a question manually (with support for all types and options).
+    - Upload questions via Excel.
+    - **Edit a question:** Change description, type, options, image URL, and video URL.
+    - **Delete a question:** Remove a question from the questionnaire.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 5. **Population**
+- **Population List Page**
+  - **Purpose:** Manage target populations for surveys.
+  - **Operations:**
+    - View all populations.
+    - Create a new population.
+    - Import people via Excel.
+    - Add individuals manually.
+    - Segment populations based on custom criteria.
+    - View details of a specific population.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- **Population Details Page**
+  - **Purpose:** Detailed management of a single population.
+  - **Operations:**
+    - View all people in the population.
+    - Add, edit, or delete individuals.
+    - Upload people via Excel.
+    - Create and manage population segments.
+    - Filter and analyze population data.
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 6. **Surveys**
+- **Survey List Page**
+  - **Purpose:** Manage all surveys.
+  - **Operations:**
+    - View all surveys and their statuses.
+    - Create a new survey and assign it to a population.
+    - View survey details and analytics.
 
-**Use GitHub Codespaces**
+- **Survey Details Page**
+  - **Purpose:** View and analyze a specific survey.
+  - **Operations:**
+    - View survey responses and analytics.
+    - Download or export survey results.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Survey Response Page**
+  - **Purpose:** Public or user-specific page for filling out assigned surveys.
+  - **Operations:**
+    - Respond to survey questions.
+    - Submit answers.
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+### 7. **Other Pages**
+- **Not Found (404) Page**
+  - **Purpose:** Friendly error page for invalid routes.
+  - **Operations:** Link to return to the home or dashboard.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## Unique Functionalities
 
-Simply open [Lovable](https://lovable.dev/projects/6ec12ae6-4e4a-4e6e-8c56-ae692b94eb1c) and click on Share -> Publish.
+- **AI-Powered Questionnaire Generation:** Automatically generate questionnaires based on product/service and target audience.
+- **Advanced Segmentation:** Create filtered segments of populations for targeted surveys.
+- **Excel Import/Export:** Import people and questions via Excel templates.
+- **Real-time Analytics:** Instantly visualize and filter survey results.
+- **Role-based Access & Security:** Secure access to all features and data.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---

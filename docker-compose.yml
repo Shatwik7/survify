@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   postgres:
@@ -9,24 +9,22 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: mydatabase
     ports:
-      - '5433:5432'
+      - '5432:5432'
     volumes:
-      - pgdata:/var/lib/postgresql/data5
+      - pgdata:/var/lib/postgresql/data
     networks:
-      - backend
+      - local
   redis:
     image: redis:latest
     restart: unless-stopped
     ports:
       - '6379:6379'
     networks:
-      - backend
-  server:
+      - local
+  backend:
     build:
-      context: .
+      context: ./server
       dockerfile: apps/server/Dockerfile
-    ports:
-      - "3001:3001"
     env_file:
       - .env
     environment:
@@ -36,39 +34,32 @@ services:
     depends_on:
       - postgres
       - redis
-    networks:
-      - backend
-  population-service:
-    build:
-      context: .
-      dockerfile: apps/population-service/Dockerfile
     ports:
-      - "3002:3002"
-    env_file:
-      - ./.env
-    environment:
-      POSTGRES_HOST: postgres
-      REDIS_HOST: redis
-      POSTGRES_PORT: 5432
-    depends_on:
-      - postgres
-      - redis
+      - '3000:3000'
     networks:
-      - backend
+      - local
 
+  frontend:
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile
+    depends_on:
+      - backend
+    networks:
+      - local
   nginx:
     image: nginx:latest
     ports:
       - "80:80"
-      - "3000:80"
+      - "8080:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - backend
+      - local
     depends_on:
-      - population-service
-      - server
+      - backend
+      - frontend
 networks:
-  backend:
+  local:
 volumes:
   pgdata:

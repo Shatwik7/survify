@@ -70,39 +70,45 @@ describe('QuestionnaireController', () => {
 
   describe('findOne', () => {
     it('should return a questionnaire by id', async () => {
+      const userId = 'user123';
       const mockResult = { id: 'q123', title: 'Test' };
       mockService.findOne.mockResolvedValue(mockResult);
 
-      const result = await controller.findOne('q123');
+      const result = await controller.findOne('q123',{user:{id:userId}});
       expect(result).toEqual(mockResult);
-      expect(service.findOne).toHaveBeenCalledWith('q123');
+      expect(service.findOne).toHaveBeenCalledWith('q123', userId);
     });
   });
 
   describe('update', () => {
     it('should update a questionnaire by id', async () => {
+      const userId = 'user123';
       const dto: UpdateQuestionnaireDto = { title: 'Updated' };
       const mockResult = { id: 'q123', title: 'Updated' };
       mockService.update.mockResolvedValue(mockResult);
 
-      const result = await controller.update('q123', dto);
+      const result = await controller.update('q123', dto, {user:{id:userId}});
       expect(result).toEqual(mockResult);
-      expect(service.update).toHaveBeenCalledWith('q123', dto);
+      expect(service.update).toHaveBeenCalledWith(userId,'q123', dto);
     });
   });
 
   describe('remove', () => {
     it('should remove a questionnaire by id', async () => {
+      const userId = 'user123';
+      const req = { user: { id: userId } };
       mockService.remove.mockResolvedValue({ deleted: true });
 
-      const result = await controller.remove('q123');
+      const result = await controller.remove('q123',req);
       expect(result).toEqual({ deleted: true });
-      expect(service.remove).toHaveBeenCalledWith('q123');
+      expect(service.remove).toHaveBeenCalledWith(userId,'q123');
     });
   });
 
   describe('addQuestion', () => {
     it('should add a question to questionnaire', async () => {
+      
+      const userId = 'user123';
       const dto: CreateQuestionDto = {
         description: 'Q1',
         type: 'text',
@@ -111,14 +117,15 @@ describe('QuestionnaireController', () => {
       const mockResult = { id: 'q123', questions: [dto] };
       mockService.addQuestion.mockResolvedValue(mockResult);
 
-      const result = await controller.addQuestion('q123', dto);
+      const result = await controller.addQuestion('q123', dto,{user:{id:userId}});
       expect(result).toEqual(mockResult);
-      expect(service.addQuestion).toHaveBeenCalledWith('q123', dto);
+      expect(service.addQuestion).toHaveBeenCalledWith("user123",'q123', dto);
     });
   });
 
   describe('addQuestions', () => {
     it('should add multiple questions to questionnaire', async () => {
+      const userId = 'user123';
       const dtos: CreateQuestionDto[] = [
         {
           description: 'Q1',
@@ -134,21 +141,23 @@ describe('QuestionnaireController', () => {
       const mockResult = { _id: 'q123', questions: dtos };
       mockService.addQuestions.mockResolvedValue(mockResult);
 
-      const result = await controller.addQuestions('q123', dtos);
+      const result = await controller.addQuestions('q123', dtos,{user:{id:userId}});
       expect(result).toEqual(mockResult);
-      expect(service.addQuestions).toHaveBeenCalledWith('q123', dtos);
+      expect(service.addQuestions).toHaveBeenCalledWith("user123",'q123', dtos);
     });
   });
 
   describe('findMany', () => {
+    const userId = 'user123';
     it('should find questionnaires by ids', async () => {
       const ids = ['q1', 'q2'];
+      const userId = 'user123';
       const mockResult = [{ id: 'q1' }, { id: 'q2' }];
       mockService.findMany.mockResolvedValue(mockResult);
 
-      const result = await controller.findMany(ids.join(','));
+      const result = await controller.findMany(ids.join(','),{user:{id:userId}});
       expect(result).toEqual(mockResult);
-      expect(service.findMany).toHaveBeenCalledWith(ids);
+      expect(service.findMany).toHaveBeenCalledWith(ids,"user123");
     });
   });
 });

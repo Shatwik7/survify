@@ -9,9 +9,11 @@ import { Question } from '../types';
 interface QuestionListProps {
   questions: Question[];
   onRefresh: () => void;
+  onEdit: (question: Question) => void;
+  onDelete: (question: Question) => void;
 }
 
-const QuestionList: React.FC<QuestionListProps> = ({ questions, onRefresh }) => {
+const QuestionList: React.FC<QuestionListProps> = ({ questions, onRefresh, onEdit, onDelete }) => {
   const getQuestionTypeBadge = (type: Question['type']) => {
     const typeLabels = {
       text: 'Text',
@@ -53,10 +55,10 @@ const QuestionList: React.FC<QuestionListProps> = ({ questions, onRefresh }) => 
               </div>
               <div className="flex items-center gap-2 ml-4">
                 {getQuestionTypeBadge(question.type)}
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => onEdit(question)}>
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => onDelete(question)}>
                   <Trash2 className="h-4 w-4 text-red-600" />
                 </Button>
               </div>

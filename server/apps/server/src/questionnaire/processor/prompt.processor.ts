@@ -4,6 +4,7 @@ import { Job } from 'bull';
 import { QuestionnaireService } from '../questionnaire.service';
 import { ConfigService } from '@nestjs/config';
 import * as os from 'os';
+import { QuestionDBService, QuestionnaireDBService } from '@app/database';
 @Processor('openai-questionnare-generator')
 export class PromptProcessor {
 
@@ -11,6 +12,7 @@ export class PromptProcessor {
 
     constructor(
         private readonly QuestionnaireService: QuestionnaireService,
+        private readonly QuestionnaireRepo:QuestionnaireDBService,
         private configService: ConfigService,
     ) { }
 
@@ -23,7 +25,7 @@ export class PromptProcessor {
             const questions = await this.generateSurveyQuestions(a.prompt);
             this.logger.debug('Generation Completed');
             this.logger.log('questions are:', questions);
-            await this.QuestionnaireService.addQuestions(a.id, questions)
+            await this.QuestionnaireRepo.addMultipleQuestionsToQuestionnaire(a.id, questions)
             await this.QuestionnaireService.changeStatusToCompleted(a.id);
         } catch (error) {
             this.logger.error('Error Genrating the questions\n\n', error);

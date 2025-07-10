@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PopulationService } from './population-service.service';
+import { PopulationService } from './population.service';
 import { PopulationDBService, PersonDBService } from '@app/database';
 import { FileStorageService } from '@app/file-storage';
 import { Queue } from 'bullmq';

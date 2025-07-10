@@ -37,15 +37,6 @@
         "tsConfigPath": "libs/file-storage/tsconfig.lib.json"
       }
     },
-    "population-service": {
-      "type": "application",
-      "root": "apps/population-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/population-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/population-service/tsconfig.app.json"
-      }
-    },
     "server": {
       "type": "application",
       "root": "apps/server",

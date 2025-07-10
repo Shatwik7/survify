@@ -13,47 +13,77 @@ export class QuestionnaireController {
     private readonly questionnaireService: QuestionnaireService,
   ) { }
 
-  @UseGuards(JwtAuthGuard)
+  
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Req() req: any, @Body() dto: CreateQuestionnaireDto): Promise<Questionnaire> {
     return this.questionnaireService.create(dto, req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  
   @Get()
-  findAll(@Req() req: any): Promise<Questionnaire[]> {
+  @UseGuards(JwtAuthGuard)
+  findAll(@Req() req: {user:{id:string}}): Promise<Questionnaire[]> {
     return this.questionnaireService.findAll(req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  
   @Get('many/:ids')
-  findMany(@Param('ids') idsParam: string): Promise<Questionnaire[]> {
+  @UseGuards(JwtAuthGuard)
+  findMany(@Param('ids') idsParam: string,@Req() req:{user:{id:string}}): Promise<Questionnaire[]> {
     const ids = idsParam.split(',');
-    return this.questionnaireService.findMany(ids);
+    return this.questionnaireService.findMany(ids,req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  
   @Get(':id')
-  findOne(@Param('id',new ParseUUIDPipe()) id: string): Promise<Questionnaire> {
-    return this.questionnaireService.findOne(id);
-  }
-
   @UseGuards(JwtAuthGuard)
+  findOne(@Param('id',ParseUUIDPipe) id: string,@Req() req:{user:{id:string}},): Promise<Questionnaire> {
+    return this.questionnaireService.findOne(id,req.user.id);
+  }
+ 
+  
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
-    @Param('id',new ParseUUIDPipe()) id: string,
+    @Param('id',ParseUUIDPipe) id: string,
     @Body() updateDto: UpdateQuestionnaireDto,
+    @Req() req:{user:{id:string}},
   ): Promise<Questionnaire> {
-    return this.questionnaireService.update(id, updateDto);
+    return this.questionnaireService.update(req.user.id,id, updateDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  
   @Post(':id/question')
+  @UseGuards(JwtAuthGuard)
   addQuestion(
-    @Param('id',new ParseUUIDPipe()) id: string,
+    @Param('id',ParseUUIDPipe) id: string,
     @Body() questionDto: CreateQuestionDto,
+    @Req() req:{user:{id:string}},
   ): Promise<Questionnaire> {
-    return this.questionnaireService.addQuestion(id, questionDto);
+    return this.questionnaireService.addQuestion(req.user.id,id, questionDto);
+  }
+
+  @Patch(":questionnaireId/question/:questionId")
+  @UseGuards(JwtAuthGuard)
+  updateQuestion(
+    @Param('questionId',ParseUUIDPipe) questionId: string,
+    @Param('questionnaireId',ParseUUIDPipe) questionnaireId: string,
+    @Req() req:{user:{id:string}},
+    @Body() UpdateQuestionnaireDto:Partial<CreateQuestionDto>
+  ){
+    return this.questionnaireService.updateQuestions(req.user.id,questionnaireId,questionId,UpdateQuestionnaireDto);
+  }
+
+  @Delete(":questionnaireId/question/:questionId")
+  @UseGuards(JwtAuthGuard)
+  deleteQuestion(
+    @Param('questionId',ParseUUIDPipe) questionId: string,
+    @Param('questionnaireId',ParseUUIDPipe) questionnaireId: string,
+    @Req() req:{user:{id:string}},
+    
+  ): Promise<Questionnaire | null>{
+    return this.questionnaireService.removeQuestion(req.user.id,questionnaireId,questionId)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -61,14 +91,15 @@ export class QuestionnaireController {
   addQuestions(
     @Param('id',new ParseUUIDPipe()) id: string,
     @Body() questions: CreateQuestionDto[],
+    @Req() req:{user:{id:string}},
   ): Promise<Questionnaire> {
-    return this.questionnaireService.addQuestions(id, questions);
+    return this.questionnaireService.addQuestions(req.user.id,id, questions);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id',new ParseUUIDPipe()) id: string): Promise<{ success: boolean; }> {
-    return this.questionnaireService.remove(id);
+  remove(@Param('id',new ParseUUIDPipe()) id: string,@Req() req:{user:{id:string}},): Promise<{ success: boolean; }> {
+    return this.questionnaireService.remove(req.user.id,id);
   }
 
   @UseGuards(JwtAuthGuard)

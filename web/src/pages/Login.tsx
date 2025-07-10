@@ -58,7 +58,7 @@ const Login = () => {
           </div>
           <div className="text-center">
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              QuestionnaireForge
+              Servify
             </span>
             <p className="text-sm text-slate-600 font-medium">Create. Collect. Analyze.</p>
           </div>
@@ -142,7 +142,7 @@ const Login = () => {
                   <div className="w-full border-t border-slate-200"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-slate-500 font-medium">New to QuestionnaireForge?</span>
+                  <span className="px-4 bg-white text-slate-500 font-medium">New to Servify?</span>
                 </div>
               </div>
 

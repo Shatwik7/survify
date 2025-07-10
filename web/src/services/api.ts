@@ -20,8 +20,8 @@ import type {
   SendSurveyResponse
 } from '../types';
 
-const API_BASE = 'http://localhost:3000'; // Update this to your actual API URL
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL ||  '/api';
+console.log(API_BASE);
 const api = axios.create({
   baseURL: API_BASE,
   headers: {
@@ -110,6 +110,16 @@ export const questionnaireService = {
 
   async createUsingAI(data: CreateUsingOpenAI): Promise<Questionnaire> {
     const response = await api.post('/questionnaire/UsingAI', data);
+    return response.data;
+  },
+
+  async updateQuestion(questionnaireId: string, questionId: string, data: Partial<CreateQuestionDto>): Promise<Questionnaire> {
+    const response = await api.patch(`/questionnaire/${questionnaireId}/question/${questionId}`, data);
+    return response.data;
+  },
+
+  async deleteQuestion(questionnaireId: string, questionId: string): Promise<Questionnaire | null> {
+    const response = await api.delete(`/questionnaire/${questionnaireId}/question/${questionId}`);
     return response.data;
   },
 };

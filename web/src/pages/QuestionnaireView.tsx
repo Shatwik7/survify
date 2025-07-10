@@ -13,6 +13,10 @@ import { usePolling } from '../hooks/usePolling';
 import QuestionList from '../components/QuestionList';
 import ManualQuestionForm from '../components/ManualQuestionForm';
 import ExcelQuestionUpload from '../components/ExcelQuestionUpload';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Question } from '../types';
+import { Label } from '@/components/ui/label';
 
 const QuestionnaireView = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +25,11 @@ const QuestionnaireView = () => {
   const [questionnaire, setQuestionnaire] = useState<Questionnaire | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('questions');
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [questionToEdit, setQuestionToEdit] = useState<Question | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Question>>({});
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   const fetchQuestionnaire = async () => {
     if (!id) return;
@@ -78,6 +87,78 @@ const QuestionnaireView = () => {
   const handleQuestionAdded = () => {
     fetchQuestionnaire();
     setActiveTab('questions');
+  };
+
+  const handleEdit = (question: Question) => {
+    setQuestionToEdit(question);
+    setEditForm({
+      description: question.description,
+      type: question.type,
+      options: question.options,
+      imageUrl: question.imageUrl,
+      videoUrl: question.videoUrl,
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditFormChange = (field: string, value: string | string[]) => {
+    setEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditSave = async () => {
+    if (!questionnaire || !questionToEdit) return;
+    setEditLoading(true);
+    try {
+      await questionnaireService.updateQuestion(
+        questionnaire.id,
+        questionToEdit.id,
+        editForm
+      );
+      toast({ title: 'Success', description: 'Question updated.' });
+      setEditModalOpen(false);
+      setQuestionToEdit(null);
+      fetchQuestionnaire();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update question', variant: 'destructive' });
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleDelete = async (question: Question) => {
+    if (!questionnaire) return;
+    if (!window.confirm('Are you sure you want to delete this question?')) return;
+    setDeleteLoading(true);
+    try {
+      await questionnaireService.deleteQuestion(questionnaire.id, question.id);
+      toast({ title: 'Success', description: 'Question deleted.' });
+      fetchQuestionnaire();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete question', variant: 'destructive' });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const addEditOption = () => {
+    setEditForm(prev => ({
+      ...prev,
+      options: [...(Array.isArray(prev.options) ? prev.options : []), '']
+    }));
+  };
+
+  const updateEditOption = (index: number, value: string) => {
+    setEditForm(prev => ({
+      ...prev,
+      options: (prev.options || []).map((opt, i) => i === index ? value : opt)
+    }));
+  };
+
+  const removeEditOption = (index: number) => {
+    setEditForm(prev => ({
+      ...prev,
+      options: (prev.options || []).filter((_, i) => i !== index)
+    }));
   };
 
   if (loading) {
@@ -171,7 +252,105 @@ const QuestionnaireView = () => {
               <QuestionList 
                 questions={questionnaire.questions || []}
                 onRefresh={fetchQuestionnaire}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
               />
+              <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Question</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="edit-description">Description</Label>
+                      <Input
+                        id="edit-description"
+                        value={editForm.description || ''}
+                        onChange={e => handleEditFormChange('description', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-type">Type</Label>
+                      <select
+                        id="edit-type"
+                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                        value={editForm.type || ''}
+                        onChange={e => {
+                          const newType = e.target.value;
+                          handleEditFormChange('type', newType);
+                          if (!['select', 'checkbox', 'radio'].includes(newType)) {
+                            handleEditFormChange('options', []);
+                          }
+                        }}
+                        disabled={editLoading}
+                      >
+                        <option value="">Select type</option>
+                        <option value="text">Text</option>
+                        <option value="number">Number</option>
+                        <option value="date">Date</option>
+                        <option value="select">Select</option>
+                        <option value="checkbox">Checkbox</option>
+                        <option value="radio">Radio</option>
+                      </select>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-imageUrl">Image URL (Optional)</Label>
+                        <Input
+                          id="edit-imageUrl"
+                          type="url"
+                          placeholder="https://example.com/image.jpg"
+                          value={editForm.imageUrl || ''}
+                          onChange={e => handleEditFormChange('imageUrl', e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-videoUrl">Video URL (Optional)</Label>
+                        <Input
+                          id="edit-videoUrl"
+                          type="url"
+                          placeholder="https://example.com/video.mp4"
+                          value={editForm.videoUrl || ''}
+                          onChange={e => handleEditFormChange('videoUrl', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    {['select', 'checkbox', 'radio'].includes(editForm.type || '') && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label>Options *</Label>
+                          <Button type="button" variant="outline" size="sm" onClick={addEditOption} disabled={editLoading}>
+                            Add Option
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          {(editForm.options || []).map((option, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <Input
+                                placeholder={`Option ${index + 1}`}
+                                value={option}
+                                onChange={e => updateEditOption(index, e.target.value)}
+                                required
+                              />
+                              <Button type="button" variant="ghost" size="icon" onClick={() => removeEditOption(index)} disabled={editLoading}>
+                                Remove
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <DialogFooter className="flex justify-end gap-2 mt-6">
+                    <Button variant="outline" onClick={() => setEditModalOpen(false)} disabled={editLoading}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleEditSave} disabled={editLoading}>
+                      {editLoading ? 'Saving...' : 'Save'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </TabsContent>
             
             <TabsContent value="manual" className="mt-6">

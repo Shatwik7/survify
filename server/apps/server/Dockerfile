@@ -22,6 +22,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist/apps/server ./dist
 COPY package*.json ./
 
-ENV NODE_ENV=production
+ENV NODE_ENV=Production
 
 CMD ["node", "dist/main"]

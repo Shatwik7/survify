@@ -105,6 +105,7 @@ export class SurveyController {
     @Res() res: Response,
     @Param("id", ParseUUIDPipe) surveyId: string,
   ) {
+    console.log("exporting the answers");
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader(
       'Content-Disposition',
@@ -124,7 +125,6 @@ export class SurveyController {
           `"${row.question.replace(/"/g, '""')}"`,
           row.question_type
         ].join(',') + '\n';
-        
         res.write(csvLine);
       }
       res.end();

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './app.module';
 import { QuestionnaireModule } from './questionnaire/questionnaire.module';
 import { AuthModule } from '@app/auth';
+import { PopulationModule } from './population/population.module';
 
 
 describe('AppModule', () => {
@@ -32,5 +33,9 @@ describe('AppModule', () => {
         const authModule = moduleRef.select(AuthModule);
         expect(authModule).toBeDefined();
     });
+
+    it('should import PopulationModule',()=>{
+        const populationModule=moduleRef.select(PopulationModule)
+    })
 
 });

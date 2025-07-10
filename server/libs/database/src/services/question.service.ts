@@ -19,7 +19,12 @@ export class QuestionDBService {
   ) {}
 
   async findById(id: string): Promise<Question | null> {
-    return this.questionRepo.findOne({ where: { id } });
+    return this.questionRepo.findOne(
+      { 
+        where: { id } ,
+        "relations":["questionnaire"],
+      }
+    );
   }
 
   async findAll(): Promise<Question[]> {

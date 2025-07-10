@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { SurveyService } from './survey.service';
 import { SurveyController } from './survey.controller';
 import { SurveyAnalysisProcessor } from './processor/survey-analysis.processor';
-import { EmailProcessor } from './email.processor';
+import { EmailProcessor } from './processor/email.processor';
 import { DatabaseModule } from '@app/database';
 import { AuthModule } from '@app/auth';
 import { BullModule } from '@nestjs/bull';

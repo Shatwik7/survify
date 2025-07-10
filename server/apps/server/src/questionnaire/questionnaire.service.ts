@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Questionnaire, QuestionnaireDBService } from '@app/database';
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { QuestionDBService, Questionnaire, QuestionnaireDBService } from '@app/database';
 import { CreateQuestionnaireDto } from './dto/create-questionnaire.dto';
 import { UpdateQuestionnaireDto } from './dto/update-questionnaire.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -10,6 +10,7 @@ import { Queue } from 'bullmq';
 export class QuestionnaireService {
   constructor(
     private readonly questionnaireRepo: QuestionnaireDBService,
+    private readonly questionRepo:QuestionDBService,
     @InjectQueue('openai-questionnare-generator') private readonly AIQueue: Queue,
   ) { }
 
@@ -29,26 +30,30 @@ export class QuestionnaireService {
     return this.questionnaireRepo.findAll(userId);
   }
 
-  async findOne(id: string): Promise<Questionnaire> {
+  async findOne(id: string,userId:string): Promise<Questionnaire> {
     const questionnaire = await this.questionnaireRepo.findById(id);
-    if (!questionnaire) {
-      throw new NotFoundException(`Questionnaire with ID ${id} not found`);
-    }
+    if(!questionnaire) throw new NotFoundException('No such Questionnaire');
+    if(questionnaire.userId!=userId) throw new UnauthorizedException('Access Denied');
     return questionnaire;
   }
 
-  async findMany(ids: string[]): Promise<Questionnaire[]> {
+  async findMany(ids: string[],userId:string): Promise<Questionnaire[]> {
     const results = await this.questionnaireRepo.findByIds(ids);
     if (!results || results.length === 0) {
       throw new NotFoundException(`No questionnaires found for given IDs`);
     }
-    return results;
+    let r=results.filter((e)=>e.userId==userId)
+    return r;
   }
 
   async addQuestion(
+    userId:string,
     questionnaireId: string,
     questionDto: CreateQuestionDto,
   ): Promise<Questionnaire> {
+    const questionnaire=await this.questionnaireRepo.findById(questionnaireId);
+    if(!questionnaire) throw new NotFoundException('No such Questionnaire');
+    if(questionnaire.userId!=userId) throw new UnauthorizedException('Access Denied');
     const updated = await this.questionnaireRepo.addQuestionToQuestionnaire(
       questionnaireId,
       questionDto,
@@ -62,9 +67,13 @@ export class QuestionnaireService {
   }
 
   async addQuestions(
+    userId:string,
     questionnaireId: string,
     questions: CreateQuestionDto[],
   ): Promise<Questionnaire> {
+    const questionnaire=await this.questionnaireRepo.findById(questionnaireId);
+    if(!questionnaire) throw new NotFoundException('No such Questionnaire');
+    if(questionnaire.userId!=userId) throw new UnauthorizedException('Access Denied');
     const updated =
       await this.questionnaireRepo.addMultipleQuestionsToQuestionnaire(
         questionnaireId,
@@ -78,24 +87,59 @@ export class QuestionnaireService {
     return updated;
   }
 
+  async updateQuestions(
+    userId:string,
+    questionnaireId:string,
+    questionId:string,
+    UpdateQuestionnaireDto:Partial<CreateQuestionDto>
+  ): Promise<Questionnaire | null>{
+    const question=await this.questionRepo.findById(questionId);
+    if(!question) throw new NotFoundException("No Such Question");
+    if(question.questionnaireId!==questionnaireId) throw new UnauthorizedException("Access Denied");
+    return this.questionnaireRepo.updateQuestionInQuestionnaire(questionnaireId,questionId,UpdateQuestionnaireDto);
+    
+  }
+
+  async removeQuestion( 
+    userId:string,
+    questionnaireId:string,
+    questionId:string,
+  ): Promise<Questionnaire | null>{
+    const question=await this.questionRepo.findById(questionId);
+    if(!question) throw new NotFoundException("No Such Question");
+    if(question.questionnaireId!==questionnaireId) throw new UnauthorizedException("Access Denied");
+    return this.questionnaireRepo.removeQuestionFromQuestionnaire(questionnaireId,questionId);
+  }
+
   async update(
-    id: string,
+    userId:string,
+    questionnaireId: string,
     updateQuestionnaireDto: UpdateQuestionnaireDto,
   ): Promise<Questionnaire> {
+    const questionnaire=await this.questionnaireRepo.findById(questionnaireId);
+    if(!questionnaire) throw new NotFoundException('No such Questionnaire');
+    if(questionnaire.userId!=userId) throw new UnauthorizedException('Access Denied');
     const updated = await this.questionnaireRepo.update(
-      id,
+      questionnaireId,
       updateQuestionnaireDto,
     );
     if (!updated) {
-      throw new NotFoundException(`Questionnaire with ID ${id} not found`);
+      throw new BadRequestException(
+        `Failed to add question to questionnaire with ID ${questionnaireId}`,
+      );
     }
     return updated;
   }
 
-  async remove(id: string): Promise<{ success: boolean }> {
-    const success = await this.questionnaireRepo.delete(id);
+  async remove(userId:string,questionnaireId: string): Promise<{ success: boolean }> {
+    const questionnaire=await this.questionnaireRepo.findById(questionnaireId);
+    if(!questionnaire) throw new NotFoundException('No such Questionnaire');
+    if(questionnaire.userId!=userId) throw new UnauthorizedException('Access Denied');
+    const success = await this.questionnaireRepo.delete(questionnaireId);
     if (!success) {
-      throw new NotFoundException(`Questionnaire with ID ${id} not found`);
+      throw new BadRequestException(
+        `Failed to add question to questionnaire with ID ${questionnaireId}`,
+      );
     }
     return { success: success }
   }

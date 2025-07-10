@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PopulationController } from './population-service.controller';
-import { PopulationService } from './population-service.service';
+import { PopulationController } from './population.controller';
+import { PopulationService } from './population.service';
 import { AuthModule } from '@app/auth';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from '@app/database';
@@ -16,22 +16,13 @@ import { FileStorageModule } from '@app/file-storage';
     AuthModule,
     DatabaseModule,
     FileStorageModule,
-  BullModule.forRootAsync({
-    inject: [ConfigService],
-    useFactory: (config: ConfigService) => ({
-      redis: {
-        host: config.get<string>('REDIS_HOST') || 'localhost',
-        port: 6379,
-      },
-    }),
-  }),
   BullModule.registerQueue({
     name: 'population',
   }),],
   controllers: [PopulationController],
   providers: [PopulationService, PopulationUploadProcessor, SegmentProcessor],
 })
-export class PopulationServiceModule { }
+export class PopulationModule { }
 
 
 // 1- large excel file streaming and storing in database

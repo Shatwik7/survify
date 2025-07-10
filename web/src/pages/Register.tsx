@@ -34,7 +34,7 @@ const Register = () => {
       await authService.signUp(formData);
       toast({
         title: "Account created successfully!",
-        description: "Welcome to QuestionnaireForge. Please sign in to continue.",
+        description: "Welcome to Servify. Please sign in to continue.",
       });
       navigate('/login');
     } catch (error: any) {
@@ -57,7 +57,7 @@ const Register = () => {
             <BarChart3 className="h-6 w-6" />
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            QuestionnaireForge
+            Servify
           </span>
         </div>
 

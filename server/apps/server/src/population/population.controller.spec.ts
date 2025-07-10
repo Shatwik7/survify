@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PopulationController } from './population-service.controller';
-import { PopulationService } from './population-service.service';
+import { PopulationController } from './population.controller';
+import { PopulationService } from './population.service';
 import { FileStorageService } from '@app/file-storage';
 import { Queue } from 'bullmq';
 import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';

@@ -5,6 +5,7 @@ import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { PopulationModule } from './population/population.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         },
       }),
     }),
+    PopulationModule,
     QuestionnaireModule,
     SurveyModule,
     UserModule],
