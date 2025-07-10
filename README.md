@@ -51,7 +51,7 @@ Before running the application, ensure you have the following installed:
     AZURE_OPENAI_API_KEY=
     AZURE_OPENAI_ENDPOINT=
     AZURE_OPENAI_API_VERSION=2024-05-01-preview
-A   ZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
+    AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
 
    # AWS KEYS
    not nessassary when running locally just set STORAGE_DRIVER="local"
